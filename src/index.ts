@@ -1,17 +1,13 @@
-import {
-	type Fn,
-	firstUpperCase,
-	isFunction,
-	singleton,
-} from '@wang-yige/utils';
-import type { StatusRefValue, StatusRefResult, CreateStatusRef } from './type';
+import { firstUpperCase, isFunction, singleton } from '@wang-yige/utils';
+import type {
+	StatusRefValue,
+	StatusRefResult,
+	CreateStatusRef,
+	StatusProxy,
+	CreateProxy,
+} from './type';
 
 export const statusRef = (() => {
-	type BeProxy = {
-		track: Fn;
-		trigger: Fn<[boolean]>;
-	};
-
 	const config: PropertyDescriptor = {
 		configurable: false,
 		enumerable: false,
@@ -25,19 +21,20 @@ export const statusRef = (() => {
 	}
 
 	const createStatusRefValue = (
+		key: string,
 		bool: boolean,
-		track: BeProxy['track'],
-		trigger: BeProxy['trigger'],
+		track: StatusProxy['track'],
+		trigger: StatusProxy['trigger'],
 	) => {
 		let value: boolean = bool;
 		const result = {
 			getValue: () => {
-				track();
+				track(key);
 				return value;
 			},
 			setValue: (v: boolean) => {
 				value = v;
-				trigger(value);
+				trigger(key, value);
 			},
 		};
 		Object.defineProperty(result, 'value', {
@@ -51,8 +48,7 @@ export const statusRef = (() => {
 	};
 
 	const createStatusRef = <T extends string[]>(
-		track: BeProxy['track'],
-		trigger: BeProxy['trigger'],
+		createProxy: CreateProxy,
 		...status: T
 	) => {
 		const map = new Map<string, StatusRefValue>();
@@ -78,7 +74,8 @@ export const statusRef = (() => {
 			[...map.keys()].forEach(_clear);
 		});
 		for (const key of status) {
-			map.set(key, createStatusRefValue(false, track, trigger));
+			const { track, trigger } = createProxy();
+			map.set(key, createStatusRefValue(key, false, track, trigger));
 			Object.defineProperties(_this, {
 				[key]: {
 					...config,
@@ -114,53 +111,51 @@ export const statusRef = (() => {
 		return _this;
 	};
 
+	function checkProxy(createProxy: CreateProxy) {
+		const { track, trigger } = createProxy();
+		if (!isFunction(track) || !isFunction(trigger)) {
+			throw new TypeError(
+				"'createProxy' param must be a Function return track and trigger function",
+			);
+		}
+		return createProxy;
+	}
+
 	class StatusRef {
-		Proxy(track: BeProxy['track'], trigger: BeProxy['trigger']) {
-			const S = singleton(StatusRef, { track, trigger });
+		Proxy(createProxy: CreateProxy) {
+			const S = singleton(StatusRef, createProxy);
 			return new S();
 		}
 
-		#proxy: BeProxy | undefined;
+		#proxy: CreateProxy | undefined = void 0;
 
-		constructor(proxy?: BeProxy) {
-			if (
-				proxy &&
-				(!isFunction(proxy.track) || !isFunction(proxy.trigger))
-			) {
-				throw new TypeError(
-					"'proxy' param must be a object with track and trigger function",
-				);
+		constructor(createProxy?: CreateProxy) {
+			if (isFunction(createProxy)) {
+				this.#proxy = checkProxy(createProxy);
 			}
-			this.#proxy = proxy;
 		}
 
 		create<T extends string[]>(...status: T): StatusRefResult<T>;
-		create(
-			track: BeProxy['track'],
-			trigger: BeProxy['trigger'],
-		): CreateStatusRef;
+		create(createProxy: CreateProxy): CreateStatusRef;
 		create<T extends string[]>(
-			track: BeProxy['track'] | string,
-			trigger: BeProxy['trigger'] | string,
+			createProxy: CreateProxy | string,
 			...status: string[]
 		): CreateStatusRef | StatusRefResult<T> {
-			let _track = this.#proxy?.track;
-			let _trigger = this.#proxy?.trigger;
+			let proxy = this.#proxy;
 			const _initial = <T extends string[]>(...status: T) => {
-				return createStatusRef(_track!, _trigger!, ...status);
+				return createStatusRef(proxy!, ...status);
 			};
-			if (isFunction(track) && isFunction(trigger)) {
-				_track = track;
-				_trigger = trigger;
+			if (isFunction(createProxy)) {
+				proxy = checkProxy(createProxy);
 				return _initial;
-			} else {
-				if (!isFunction(_track) || !isFunction(_trigger)) {
-					throw new Error(
-						"If not use 'Proxy' function to create track and trigger, you must pass them as arguments",
-					);
-				}
+			} else if (!proxy) {
+				throw new Error(
+					"If not use 'Proxy' function to create track and trigger, you must pass them as arguments",
+				);
 			}
-			return _initial(...[...new Set(status)]) as StatusRefResult<T>;
+			return _initial(
+				...[...new Set([createProxy, ...status])],
+			) as StatusRefResult<T>;
 		}
 	}
 

@@ -2,16 +2,25 @@ import { describe, expect, it } from 'vitest';
 import { statusRef } from '.';
 
 describe('statusRef', () => {
-	function track() {
-		// console.log('track');
+	function track(key: string) {
+		console.log('track => ', 'key: ', key);
 		return 'track';
 	}
-	function trigger(bool: boolean) {
-		// console.log('trigger: ', bool);
+	function trigger(key: string, bool: boolean) {
+		console.log('trigger => ', 'key: ', key, 'value: ', bool);
 		return bool;
 	}
+	let i = 0;
+	function createProxy() {
+		const index = ++i;
+		console.log('createProxy => ', index);
+		return {
+			track,
+			trigger,
+		};
+	}
 	it('use status ref', () => {
-		const create = statusRef.create(track, trigger);
+		const create = statusRef.create(createProxy);
 		const status = create('loading');
 		expect(status.loading).toBe(false);
 		status.onLoading();
@@ -25,7 +34,7 @@ describe('statusRef', () => {
 	});
 
 	it('initial value', () => {
-		const create = statusRef.create(track, trigger);
+		const create = statusRef.create(createProxy);
 		const status = create('loading', 'initial').on();
 		expect(status.loading).toBe(true);
 		expect(status.initial).toBe(true);
@@ -38,7 +47,7 @@ describe('statusRef', () => {
 	});
 
 	it('initial one value', () => {
-		const create = statusRef.create(track, trigger);
+		const create = statusRef.create(createProxy);
 		const status = create('loading', 'initial').onInitial();
 		expect(status.loading).toBe(false);
 		expect(status.initial).toBe(true);

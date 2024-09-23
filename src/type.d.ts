@@ -1,4 +1,9 @@
-import { ElementOf, FirstElement, RestElements } from '@wang-yige/utils';
+import type {
+	ElementOf,
+	FirstElement,
+	RestElements,
+	Fn,
+} from '@wang-yige/utils';
 
 export type StatusRefValue = {
 	getValue: () => boolean;
@@ -9,6 +14,13 @@ export type StatusRefValue = {
 export type CreateStatusRef = {
 	<T extends string[]>(...status: T): StatusRefResult<T>;
 };
+
+export type StatusProxy = {
+	track: Fn<[key: string]>;
+	trigger: Fn<[key: string, status: boolean]>;
+};
+
+export type CreateProxy = Fn<[], StatusProxy>;
 
 type StatusRefSingle<T extends string, ALL extends string[]> = {
 	[K in T]: boolean;
