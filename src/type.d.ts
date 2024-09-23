@@ -16,8 +16,8 @@ export type CreateStatusRef = {
 };
 
 export type StatusProxy = {
-	track: Fn<[key: string]>;
-	trigger: Fn<[key: string, status: boolean]>;
+	track: Fn<[target: object, key: string]>;
+	trigger: Fn<[target: object, key: string, status: boolean]>;
 };
 
 export type CreateProxy = Fn<[], StatusProxy>;

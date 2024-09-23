@@ -21,6 +21,7 @@ export const statusRef = (() => {
 	}
 
 	const createStatusRefValue = (
+		target: object,
 		key: string,
 		bool: boolean,
 		track: StatusProxy['track'],
@@ -29,12 +30,12 @@ export const statusRef = (() => {
 		let value: boolean = bool;
 		const result = {
 			getValue: () => {
-				track(key);
+				track(target, key);
 				return value;
 			},
 			setValue: (v: boolean) => {
 				value = v;
-				trigger(key, value);
+				trigger(target, key, value);
 			},
 		};
 		Object.defineProperty(result, 'value', {
@@ -75,7 +76,10 @@ export const statusRef = (() => {
 		});
 		for (const key of status) {
 			const { track, trigger } = createProxy();
-			map.set(key, createStatusRefValue(key, false, track, trigger));
+			map.set(
+				key,
+				createStatusRefValue(_this, key, false, track, trigger),
+			);
 			Object.defineProperties(_this, {
 				[key]: {
 					...config,

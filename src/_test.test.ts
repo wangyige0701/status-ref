@@ -2,11 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { statusRef } from '.';
 
 describe('statusRef', () => {
-	function track(key: string) {
+	function track(target: object, key: string) {
 		console.log('track => ', 'key: ', key);
 		return 'track';
 	}
-	function trigger(key: string, bool: boolean) {
+	function trigger(target: object, key: string, bool: boolean) {
 		console.log('trigger => ', 'key: ', key, 'value: ', bool);
 		return bool;
 	}
