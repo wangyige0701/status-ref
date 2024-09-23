@@ -1,4 +1,9 @@
-import { firstUpperCase, isFunction, singleton } from '@wang-yige/utils';
+import {
+	firstUpperCase,
+	isBoolean,
+	isFunction,
+	singleton,
+} from '@wang-yige/utils';
 import type {
 	StatusRefValue,
 	StatusRefResult,
@@ -8,14 +13,14 @@ import type {
 } from './type';
 
 export const statusRef = (() => {
-	const config: PropertyDescriptor = {
+	const CONFIG: PropertyDescriptor = {
 		configurable: false,
 		enumerable: false,
 	};
 
 	function _setProp(_this: any, s: string, value: Function) {
 		Object.defineProperty(_this, s, {
-			...config,
+			...CONFIG,
 			value,
 		});
 	}
@@ -49,6 +54,7 @@ export const statusRef = (() => {
 	};
 
 	const createStatusRef = <T extends string[]>(
+		initial: boolean,
 		createProxy: CreateProxy,
 		...status: T
 	) => {
@@ -75,35 +81,35 @@ export const statusRef = (() => {
 			[...map.keys()].forEach(_clear);
 		});
 		for (const key of status) {
-			const { track, trigger } = createProxy();
+			const { track, trigger } = createProxy(key, initial);
 			map.set(
 				key,
-				createStatusRefValue(_this, key, false, track, trigger),
+				createStatusRefValue(_this, key, initial, track, trigger),
 			);
 			Object.defineProperties(_this, {
 				[key]: {
-					...config,
+					...CONFIG,
 					enumerable: true,
 					get: () => {
 						return map.get(key)!.getValue();
 					},
 				},
 				[`on${firstUpperCase(key)}`]: {
-					...config,
+					...CONFIG,
 					value: () => {
 						map.get(key)!.setValue(true);
 						return _this;
 					},
 				},
 				[`off${firstUpperCase(key)}`]: {
-					...config,
+					...CONFIG,
 					value: () => {
 						map.get(key)!.setValue(false);
 						return _this;
 					},
 				},
 				[`toggle${firstUpperCase(key)}`]: {
-					...config,
+					...CONFIG,
 					value: () => {
 						const oldValue = map.get(key)!.value;
 						map.get(key)!.setValue(!oldValue);
@@ -116,7 +122,7 @@ export const statusRef = (() => {
 	};
 
 	function checkProxy(createProxy: CreateProxy) {
-		const { track, trigger } = createProxy();
+		const { track, trigger } = createProxy(void 0, void 0);
 		if (!isFunction(track) || !isFunction(trigger)) {
 			throw new TypeError(
 				"'createProxy' param must be a Function return track and trigger function",
@@ -126,12 +132,28 @@ export const statusRef = (() => {
 	}
 
 	class StatusRef {
+		#proxy: CreateProxy | undefined = void 0;
+		#initial: boolean = false;
+
 		Proxy(createProxy: CreateProxy) {
 			const S = singleton(StatusRef, createProxy);
 			return new S();
 		}
 
-		#proxy: CreateProxy | undefined = void 0;
+		setInitial(bool: boolean) {
+			if (!isBoolean(bool)) {
+				throw new TypeError('param must be a Boolean');
+			}
+			this.#initial = bool;
+		}
+
+		/**
+		 * The global status initial value, use in every instance. Can be modified by `setInitial` method.
+		 * - Default is `false`.
+		 */
+		get initial() {
+			return this.#initial;
+		}
 
 		constructor(createProxy?: CreateProxy) {
 			if (isFunction(createProxy)) {
@@ -139,7 +161,14 @@ export const statusRef = (() => {
 			}
 		}
 
+		/**
+		 * @param status The status value string.
+		 */
 		create<T extends string[]>(...status: T): StatusRefResult<T>;
+		/**
+		 * @param createProxy Function return track and trigger function,
+		 * which received the target key and the initial boolean status.
+		 */
 		create(createProxy: CreateProxy): CreateStatusRef;
 		create<T extends string[]>(
 			createProxy: CreateProxy | string,
@@ -147,7 +176,7 @@ export const statusRef = (() => {
 		): CreateStatusRef | StatusRefResult<T> {
 			let proxy = this.#proxy;
 			const _initial = <T extends string[]>(...status: T) => {
-				return createStatusRef(proxy!, ...status);
+				return createStatusRef(this.#initial, proxy!, ...status);
 			};
 			if (isFunction(createProxy)) {
 				proxy = checkProxy(createProxy);

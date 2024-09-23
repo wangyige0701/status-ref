@@ -20,7 +20,10 @@ export type StatusProxy = {
 	trigger: Fn<[target: object, key: string, status: boolean]>;
 };
 
-export type CreateProxy = Fn<[], StatusProxy>;
+export type CreateProxy = Fn<
+	[key: string | undefined, initial: boolean | undefined],
+	StatusProxy
+>;
 
 type StatusRefSingle<T extends string, ALL extends string[]> = {
 	[K in T]: boolean;
