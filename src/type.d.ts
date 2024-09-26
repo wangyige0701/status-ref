@@ -3,6 +3,7 @@ import type {
 	FirstElement,
 	RestElements,
 	Fn,
+	Awaitable,
 } from '@wang-yige/utils';
 
 export type StatusRefValue = {
@@ -25,6 +26,21 @@ export type CreateProxy = Fn<
 	StatusProxy
 >;
 
+export type ListenStatusCallback = Fn<
+	[target: object, key: string, status: boolean],
+	Awaitable<void>
+>;
+
+/**
+ * @param cb The callback function to be executed when the status change to expected.
+ * @param immediate Whether to execute the callback immediately if the status is already expected.
+ * - default is false.
+ */
+type ListenFunction<ALL> = Fn<
+	[cb: ListenStatusCallback, immediate: boolean],
+	StatusRefResult<ALL>
+>;
+
 type StatusRefSingle<T extends string, ALL extends string[]> = {
 	[K in T]: boolean;
 } & {
@@ -32,6 +48,10 @@ type StatusRefSingle<T extends string, ALL extends string[]> = {
 		| `on${Capitalize<K>}`
 		| `off${Capitalize<K>}`
 		| `toggle${Capitalize<K>}`]: () => StatusRefResult<ALL>;
+} & {
+	[K in T as
+		| `listenOn${Capitalize<K>}`
+		| `listenOff${Capitalize<K>}`]: ListenFunction<ALL>;
 };
 
 type StatusRefMultiple<T extends string[], ALL = T> = T extends []

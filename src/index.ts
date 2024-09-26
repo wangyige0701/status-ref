@@ -10,6 +10,7 @@ import type {
 	CreateStatusRef,
 	StatusProxy,
 	CreateProxy,
+	ListenStatusCallback,
 } from './type';
 
 export const statusRef = (() => {
@@ -31,6 +32,8 @@ export const statusRef = (() => {
 		bool: boolean,
 		track: StatusProxy['track'],
 		trigger: StatusProxy['trigger'],
+		listenOn: ListenStatusCallback[],
+		listenOff: ListenStatusCallback[],
 	) => {
 		let value: boolean = bool;
 		const result = {
@@ -41,6 +44,12 @@ export const statusRef = (() => {
 			setValue: (v: boolean) => {
 				value = v;
 				trigger(target, key, value);
+				(async () => {
+					const list = value ? listenOn : listenOff;
+					for (const func of list) {
+						await func?.(target, key, value);
+					}
+				})();
 			},
 		};
 		Object.defineProperty(result, 'value', {
@@ -81,10 +90,20 @@ export const statusRef = (() => {
 			[...map.keys()].forEach(_clear);
 		});
 		for (const key of status) {
+			const listenOn: ListenStatusCallback[] = []; //未调用
+			const listenOff: ListenStatusCallback[] = [];
 			const { track, trigger } = createProxy(key, initial);
 			map.set(
 				key,
-				createStatusRefValue(_this, key, initial, track, trigger),
+				createStatusRefValue(
+					_this,
+					key,
+					initial,
+					track,
+					trigger,
+					listenOn,
+					listenOff,
+				),
 			);
 			Object.defineProperties(_this, {
 				[key]: {
@@ -114,6 +133,30 @@ export const statusRef = (() => {
 						const oldValue = map.get(key)!.value;
 						map.get(key)!.setValue(!oldValue);
 						return _this;
+					},
+				},
+				[`listenOn${firstUpperCase(key)}`]: {
+					...CONFIG,
+					value: (
+						cb: ListenStatusCallback,
+						immediate: boolean = false,
+					) => {
+						listenOn.push(cb);
+						if (immediate && map.get(key)!.value) {
+							cb(_this, key, true);
+						}
+					},
+				},
+				[`listenOff${firstUpperCase(key)}`]: {
+					...CONFIG,
+					value: (
+						cb: ListenStatusCallback,
+						immediate: boolean = false,
+					) => {
+						listenOff.push(cb);
+						if (immediate && !map.get(key)!.value) {
+							cb(_this, key, false);
+						}
 					},
 				},
 			});
