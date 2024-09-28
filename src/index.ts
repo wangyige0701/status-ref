@@ -12,6 +12,7 @@ import type {
 	CreateProxy,
 	ListenStatusCallback,
 } from './type';
+import { CREATE_STATUS_PROXY_INITIAL } from './constants';
 
 export const useStatusRef = (() => {
 	const CONFIG: PropertyDescriptor = {
@@ -165,7 +166,10 @@ export const useStatusRef = (() => {
 	};
 
 	function checkProxy(createProxy: CreateProxy) {
-		const { track, trigger } = createProxy(void 0, void 0);
+		const { track, trigger } = createProxy(
+			CREATE_STATUS_PROXY_INITIAL,
+			false,
+		);
 		if (!isFunction(track) || !isFunction(trigger)) {
 			throw new TypeError(
 				"'createProxy' param must be a Function return track and trigger function",
@@ -176,8 +180,13 @@ export const useStatusRef = (() => {
 
 	class StatusRef {
 		#proxy: CreateProxy | undefined = void 0;
+		#proxyCheck: boolean = false; // check proxy globally only once
 		#initial: boolean = false;
 
+		/**
+		 * This `createProxy` function will be checked when the create method called first,
+		 * and the firstly called of this function whill be used to checked, with a symbol passed as the first param.
+		 */
 		Proxy(createProxy: CreateProxy) {
 			const S = singleton(StatusRef, createProxy);
 			return new S();
@@ -199,9 +208,7 @@ export const useStatusRef = (() => {
 		}
 
 		constructor(createProxy?: CreateProxy) {
-			if (isFunction(createProxy)) {
-				this.#proxy = checkProxy(createProxy);
-			}
+			this.#proxy = createProxy;
 		}
 
 		/**
@@ -218,6 +225,10 @@ export const useStatusRef = (() => {
 			...status: string[]
 		): CreateStatusRef | StatusRefResult<T> {
 			let proxy = this.#proxy;
+			if (isFunction(proxy) && !this.#proxyCheck) {
+				proxy = checkProxy(proxy);
+				this.#proxyCheck = true;
+			}
 			const _initial = <T extends string[]>(...status: T) => {
 				return createStatusRef(this.#initial, proxy!, ...status);
 			};

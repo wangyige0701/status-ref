@@ -5,6 +5,7 @@ import type {
 	Fn,
 	Awaitable,
 } from '@wang-yige/utils';
+import { CREATE_STATUS_PROXY_INITIAL } from './constants';
 
 export type StatusRefValue = {
 	getValue: () => boolean;
@@ -22,7 +23,7 @@ export type StatusProxy = {
 };
 
 export type CreateProxy = Fn<
-	[key: string | undefined, initial: boolean | undefined],
+	[key: string | typeof CREATE_STATUS_PROXY_INITIAL, initial: boolean],
 	StatusProxy
 >;
 

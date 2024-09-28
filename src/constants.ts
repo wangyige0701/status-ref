@@ -1,0 +1,3 @@
+export const CREATE_STATUS_PROXY_INITIAL = Symbol(
+	'__CREATE_STATUS_PROXY_INITIAL__',
+);
