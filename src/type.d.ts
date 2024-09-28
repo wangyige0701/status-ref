@@ -37,7 +37,7 @@ export type ListenStatusCallback = Fn<
  * - default is false.
  */
 type ListenFunction<ALL> = Fn<
-	[cb: ListenStatusCallback, immediate: boolean],
+	[cb: ListenStatusCallback, immediate?: boolean],
 	StatusRefResult<ALL>
 >;
 

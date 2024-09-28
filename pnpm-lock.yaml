@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@wang-yige/utils':
-        specifier: ^0.0.4
-        version: 0.0.4
+        specifier: ^0.0.5
+        version: 0.0.5
     devDependencies:
       '@types/react':
         specifier: ^18.3.8
@@ -299,8 +299,8 @@ packages:
   '@vue/shared@3.5.8':
     resolution: {integrity: sha512-mJleSWbAGySd2RJdX1RBtcrUBX6snyOc0qHpgk3lGi4l9/P/3ny3ELqFWqYdkXIwwNN/kdm8nD9ky8o6l/Lx2A==}
 
-  '@wang-yige/utils@0.0.4':
-    resolution: {integrity: sha512-GFlOrVWNH1ekyAZj0mIkWjEbrKYf1+d6lW9g8415SFjkPkk/T4noXGiKqgxAw9kPz7ZNS4D4814suimsQySUWA==}
+  '@wang-yige/utils@0.0.5':
+    resolution: {integrity: sha512-vDjF2+5SmywaepERBKCqFOZiGZHX2qJgRB+yOeBLL8trrxNNRWaYogmJnE7YjcuShmKmM7frByEtbY39olWMNg==}
 
   assertion-error@2.0.1:
     resolution: {integrity: sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA==}
@@ -677,7 +677,7 @@ snapshots:
 
   '@vue/shared@3.5.8': {}
 
-  '@wang-yige/utils@0.0.4': {}
+  '@wang-yige/utils@0.0.5': {}
 
   assertion-error@2.0.1: {}
 

@@ -13,7 +13,7 @@
 	"author": "",
 	"license": "MIT",
 	"dependencies": {
-		"@wang-yige/utils": "^0.0.4"
+		"@wang-yige/utils": "^0.0.5"
 	},
 	"devDependencies": {
 		"@types/react": "^18.3.8",
