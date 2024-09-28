@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { ref, effect } from '@vue/reactivity';
-import { vueStatusRef } from '.';
+import { useVueStatusRef } from '.';
 
-describe('vueStatusRef', () => {
+describe('useVueStatusRef', () => {
 	it('should use status', async () => {
-		const status = vueStatusRef.create('loading', 'initial');
+		const status = useVueStatusRef.create('loading', 'initial');
 		const loading = ref(false);
 		const initial = ref(true);
 		effect(() => {

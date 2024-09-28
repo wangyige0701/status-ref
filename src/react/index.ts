@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { statusRef } from '@/index';
+import { useStatusRef } from '@/index';
 
-export const reactStatusRef = statusRef.Proxy((_, initial) => {
+export const useReactStatusRef = useStatusRef.Proxy((_, initial) => {
 	const [status, setStatus] = useState(initial);
 	return {
 		track: () => {

@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { useEffect, useState } from 'react';
-import { reactStatusRef } from '.';
+import React, { useEffect, useState } from 'react';
+import { useReactStatusRef } from '.';
 
-describe('reactStatusRef', () => {
+describe('useReactStatusRef', () => {
 	it('should use status', () => {
-		const status = reactStatusRef.create('loading');
+		const status = useReactStatusRef.create('loading');
 		const [loading, setLoading] = useState(false);
 		useEffect(() => {
 			loading;

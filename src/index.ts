@@ -13,7 +13,7 @@ import type {
 	ListenStatusCallback,
 } from './type';
 
-export const statusRef = (() => {
+export const useStatusRef = (() => {
 	const CONFIG: PropertyDescriptor = {
 		configurable: false,
 		enumerable: false,
