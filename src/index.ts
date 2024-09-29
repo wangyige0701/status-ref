@@ -40,7 +40,10 @@ export const useStatusRef = (() => {
 		let value: boolean = bool;
 		const result = {
 			getValue: () => {
-				track(target, key);
+				const result = track(target, key);
+				if (isBoolean(result)) {
+					return result;
+				}
 				return value;
 			},
 			setValue: (v: boolean) => {
