@@ -12,13 +12,14 @@ import type {
 	CreateProxy,
 	ListenStatusCallback,
 } from './type';
-import { CREATE_STATUS_PROXY_INITIAL } from './constants';
 
 export const useStatusRef = (() => {
 	const CONFIG: PropertyDescriptor = {
 		configurable: false,
 		enumerable: false,
 	};
+
+	const functionCheck = new WeakMap<Function, boolean>();
 
 	function _setProp(_this: any, s: string, value: Function) {
 		Object.defineProperty(_this, s, {
@@ -93,7 +94,26 @@ export const useStatusRef = (() => {
 		for (const key of status) {
 			const listenOn: ListenStatusCallback[] = []; //未调用
 			const listenOff: ListenStatusCallback[] = [];
-			const { track, trigger } = createProxy(key, initial);
+			let track: StatusProxy['track'];
+			let trigger: StatusProxy['trigger'];
+			try {
+				const { track: _track, trigger: _trigger } = createProxy(
+					key,
+					initial,
+				);
+				if (!functionCheck.get(createProxy)) {
+					if (!isFunction(_track) || !isFunction(_trigger)) {
+						throw new TypeError(
+							'The Proxy param must be a function which return `track` and `trigger` function',
+						);
+					}
+					functionCheck.set(createProxy, true);
+				}
+				track = _track;
+				trigger = _trigger;
+			} catch (error) {
+				throw error;
+			}
 			map.set(
 				key,
 				createStatusRefValue(
@@ -165,22 +185,8 @@ export const useStatusRef = (() => {
 		return _this;
 	};
 
-	function checkProxy(createProxy: CreateProxy) {
-		const { track, trigger } = createProxy(
-			CREATE_STATUS_PROXY_INITIAL,
-			false,
-		);
-		if (!isFunction(track) || !isFunction(trigger)) {
-			throw new TypeError(
-				"'createProxy' param must be a Function return track and trigger function",
-			);
-		}
-		return createProxy;
-	}
-
 	class StatusRef {
 		#proxy: CreateProxy | undefined = void 0;
-		#proxyCheck: boolean = false; // check proxy globally only once
 		#initial: boolean = false;
 
 		/**
@@ -225,15 +231,11 @@ export const useStatusRef = (() => {
 			...status: string[]
 		): CreateStatusRef | StatusRefResult<T> {
 			let proxy = this.#proxy;
-			if (isFunction(proxy) && !this.#proxyCheck) {
-				proxy = checkProxy(proxy);
-				this.#proxyCheck = true;
-			}
 			const _initial = <T extends string[]>(...status: T) => {
 				return createStatusRef(this.#initial, proxy!, ...status);
 			};
 			if (isFunction(createProxy)) {
-				proxy = checkProxy(createProxy);
+				proxy = createProxy;
 				return _initial;
 			} else if (!proxy) {
 				throw new Error(

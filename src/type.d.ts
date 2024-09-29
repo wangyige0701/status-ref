@@ -5,7 +5,6 @@ import type {
 	Fn,
 	Awaitable,
 } from '@wang-yige/utils';
-import { CREATE_STATUS_PROXY_INITIAL } from './constants';
 
 export type StatusRefValue = {
 	getValue: () => boolean;
@@ -22,10 +21,7 @@ export type StatusProxy = {
 	trigger: Fn<[target: object, key: string, status: boolean]>;
 };
 
-export type CreateProxy = Fn<
-	[key: string | typeof CREATE_STATUS_PROXY_INITIAL, initial: boolean],
-	StatusProxy
->;
+export type CreateProxy = Fn<[key: string, initial: boolean], StatusProxy>;
 
 export type ListenStatusCallback = Fn<
 	[target: object, key: string, status: boolean],
