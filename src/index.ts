@@ -1,6 +1,7 @@
 import {
 	firstUpperCase,
 	isBoolean,
+	isDef,
 	isFunction,
 	singleton,
 } from '@wang-yige/utils';
@@ -41,7 +42,7 @@ export const useStatusRef = (() => {
 		const result = {
 			getValue: () => {
 				const result = track(target, key);
-				if (isBoolean(result)) {
+				if (isDef(result)) {
 					return result;
 				}
 				return value;
@@ -197,8 +198,7 @@ export const useStatusRef = (() => {
 		 * and the firstly called of this function whill be used to checked, with a symbol passed as the first param.
 		 */
 		Proxy(createProxy: CreateProxy) {
-			const S = singleton(StatusRef, createProxy);
-			return new S();
+			return new (singleton(StatusRef, createProxy))();
 		}
 
 		setInitial(bool: boolean) {
@@ -227,6 +227,8 @@ export const useStatusRef = (() => {
 		/**
 		 * @param createProxy Function return track and trigger function,
 		 * which received the target key and the initial boolean status.
+		 * - `track`: If it return a not void value, the result will be used as the status return value.
+		 * - `trigger`: Custom trigger logic.
 		 */
 		create(createProxy: CreateProxy): CreateStatusRef;
 		create<T extends string[]>(
@@ -251,6 +253,5 @@ export const useStatusRef = (() => {
 		}
 	}
 
-	const S = singleton(StatusRef, void 0);
-	return new S();
+	return new (singleton(StatusRef, void 0))();
 })();

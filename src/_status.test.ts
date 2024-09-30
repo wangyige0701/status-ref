@@ -5,11 +5,9 @@ import { delay } from '@wang-yige/utils';
 describe('useStatusRef', () => {
 	function track(target: object, key: string) {
 		// console.log('track => ', 'key: ', key);
-		return 'track';
 	}
 	function trigger(target: object, key: string, bool: boolean) {
 		// console.log('trigger => ', 'key: ', key, 'value: ', bool);
-		return bool;
 	}
 	let i = 0;
 	function createProxy() {
