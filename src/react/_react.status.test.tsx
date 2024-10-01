@@ -9,15 +9,22 @@ import Status from './_components/status';
 
 describe('useReactStatusRef', () => {
 	it('should use status', async () => {
-		const { container, getByTestId } = render(<Status />);
+		const { getByTestId } = render(<Status />);
 		const changeEl = getByTestId('change');
 		const changeElBtn = getByTestId('change_btn');
+		const changeElBtn2 = getByTestId('change_btn2');
 		const toggleEl = getByTestId('toggle');
 		const toggleElBtn = getByTestId('toggle_btn');
 		fireEvent.click(changeElBtn);
 		await waitFor(() => {});
 		expect(changeEl.textContent).toBe('true');
 		fireEvent.click(changeElBtn);
+		await waitFor(() => {});
+		expect(changeEl.textContent).toBe('true');
+		fireEvent.click(changeElBtn2);
+		await waitFor(() => {});
+		expect(changeEl.textContent).toBe('false');
+		fireEvent.click(changeElBtn2);
 		await waitFor(() => {});
 		expect(changeEl.textContent).toBe('true');
 
