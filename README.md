@@ -27,8 +27,9 @@ const statusRef = useStatusRef.create(() => {
 
 const status = statusRef('loading');
 
-status.loading; // default is false, unless you use the useStatusRef.setInitial() to change the default value.
+// default is false, unless you use the useStatusRef.setInitial() to change the default value.
 // And only the `loading` property is enumerable.
+status.loading;
 
 // It has the following methods.
 status.onLoading();
@@ -56,9 +57,10 @@ status.listenOffLoading(() => {});
 ```jsx
 import { useReactStatusRef } from 'status-ref';
 
-export default function App() {
-	const status = useReactStatusRef.create('loading');
+// It must out of the component, otherwise it will be recreated every time the component is rendered.
+const status = useReactStatusRef.create('loading');
 
+export default function App() {
 	return <div onclick={status.toggleLoading()}>{status.loading}</div>;
 }
 ```
