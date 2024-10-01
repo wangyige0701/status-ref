@@ -40,7 +40,7 @@ export type ListenStatusCallback = Fn<
  * @param immediate Whether to execute the callback immediately if the status is already expected.
  * - default is false.
  */
-type ListenFunction<ALL> = Fn<
+type ListenFunction<ALL extends string[]> = Fn<
 	[cb: ListenStatusCallback, immediate?: boolean],
 	StatusRefResult<ALL>
 >;
