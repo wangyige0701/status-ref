@@ -20,7 +20,7 @@ describe('useStatusRef', () => {
 	}
 	it('use status ref', () => {
 		const create = useStatusRef.create(createProxy);
-		const status = create('loading');
+		const status = create('loading', 'visible');
 		expect(status.loading).toBe(false);
 		status.onLoading();
 		expect(status.loading).toBe(true);
@@ -30,6 +30,7 @@ describe('useStatusRef', () => {
 		expect(status.loading).toBe(false);
 		status.toggleLoading();
 		expect(status.loading).toBe(true);
+		expect({ ...status }).toEqual({ loading: true, visible: false });
 	});
 
 	it('initial value', () => {

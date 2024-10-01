@@ -1,7 +1,7 @@
 {
 	"name": "status-ref",
 	"version": "0.0.1",
-	"description": "",
+	"description": "A boolean status controller, can track and trigger status changes",
 	"type": "module",
 	"main": "dist/index.cjs",
 	"module": "dist/index.mjs",
@@ -36,9 +36,16 @@
 		"react",
 		"state",
 		"status",
-		"boolean"
+		"boolean",
+		"JavaScript",
+		"TypeScript"
 	],
 	"author": "Yige Wang <wyg1776686515@gmail.com>",
+	"homepage": "https://github.com/wangyige0701/status-ref",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/wangyige0701/status-ref.git"
+	},
 	"license": "MIT",
 	"dependencies": {
 		"@wang-yige/utils": "^0.0.5"
