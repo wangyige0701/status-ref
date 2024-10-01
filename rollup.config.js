@@ -10,12 +10,17 @@ const enteries = ['src/index.ts', 'src/vue/index.ts', 'src/react/index.ts'];
 
 const plugins = [
 	alias({
-		entries: [{ find: /^@\/(.+)$/, replacement: '../$1' }],
-		customResolver: id => {
-			return {
-				id,
-				external: 'relative',
-			};
+		entries: [{ find: /^@\/(.+)$/, replacement: 'status-ref/$1' }],
+		customResolver: source => {
+			let id = source;
+			if (source.startsWith('status-ref') && source.endsWith('/index')) {
+				id = source.slice(0, -6);
+				return {
+					id,
+					external: 'relative',
+				};
+			}
+			return null;
 		},
 	}),
 	resolve({
@@ -60,13 +65,13 @@ export default [
 		if (index === 1) {
 			return {
 				...config,
-				external: ['@vue/reactivity', /^\.\.\/.+$/],
+				external: ['@vue/reactivity'],
 			};
 		}
 		if (index === 2) {
 			return {
 				...config,
-				external: ['react', /^\.\.\/.+$/],
+				external: ['react'],
 			};
 		}
 		return config;
