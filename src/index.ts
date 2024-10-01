@@ -203,7 +203,9 @@ export const useStatusRef = (() => {
 
 		setInitial(bool: boolean) {
 			if (!isBoolean(bool)) {
-				throw new TypeError('param must be a Boolean');
+				throw new TypeError(
+					'The value to set initial status must be a Boolean',
+				);
 			}
 			this.#initial = bool;
 		}

@@ -1,5 +1,4 @@
 import type {
-	ElementOf,
 	FirstElement,
 	RestElements,
 	Fn,
