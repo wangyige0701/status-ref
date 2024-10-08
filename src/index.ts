@@ -14,6 +14,8 @@ import type {
 	ListenStatusCallback,
 } from './type';
 
+export type StatusRef<T extends string[]> = StatusRefResult<T>;
+
 export const useStatusRef = (() => {
 	const CONFIG: PropertyDescriptor = {
 		configurable: false,
