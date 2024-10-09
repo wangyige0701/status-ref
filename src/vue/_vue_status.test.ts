@@ -4,7 +4,7 @@ import { useVueStatusRef } from '.';
 
 describe('useVueStatusRef', () => {
 	it('should use status', async () => {
-		const status = useVueStatusRef.create('loading', 'initial');
+		const status = useVueStatusRef('loading', 'initial');
 		const loading = ref(false);
 		const initial = ref(true);
 		effect(() => {

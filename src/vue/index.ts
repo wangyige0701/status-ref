@@ -1,9 +1,9 @@
 import { track, trigger, TrackOpTypes, TriggerOpTypes } from '@vue/reactivity';
-import { useStatusRef, type StatusRef } from '@/index';
+import { type StatusRefResult, StatusRef } from '@/index';
 
-export type { StatusRef };
+export type { StatusRefResult };
 
-export const useVueStatusRef = useStatusRef.Proxy(() => {
+export const useVueStatusRef = StatusRef.create(() => {
 	return {
 		track: (target, key) => {
 			track(target, TrackOpTypes.GET, key);
