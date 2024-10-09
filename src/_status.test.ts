@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest';
-import { useStatusRef } from '.';
-import { delay } from '@wang-yige/utils';
+import { describe, expect, expectTypeOf, it } from 'vitest';
+import { StatusRef, type StatusRefResult } from '.';
+import { delay, type Fn } from '@wang-yige/utils';
 
-describe('useStatusRef', () => {
+describe('StatusRef', () => {
 	function track(target: object, key: string) {
 		// console.log('track => ', 'key: ', key);
 	}
@@ -19,8 +19,8 @@ describe('useStatusRef', () => {
 		};
 	}
 	it('use status ref', () => {
-		const create = useStatusRef.create(createProxy);
-		const status = create('loading', 'visible');
+		const useStatusRef = StatusRef.create(createProxy);
+		const status = useStatusRef('loading', 'visible');
 		expect(status.loading).toBe(false);
 		status.onLoading();
 		expect(status.loading).toBe(true);
@@ -34,8 +34,8 @@ describe('useStatusRef', () => {
 	});
 
 	it('initial value', () => {
-		const create = useStatusRef.create(createProxy);
-		const status = create('loading', 'initial').on();
+		const useStatusRef = StatusRef.create(createProxy);
+		const status = useStatusRef('loading', 'initial').on();
 		expect(status.loading).toBe(true);
 		expect(status.initial).toBe(true);
 		status.off();
@@ -47,8 +47,8 @@ describe('useStatusRef', () => {
 	});
 
 	it('initial one value', () => {
-		const create = useStatusRef.create(createProxy);
-		const status = create('loading', 'initial').onInitial();
+		const useStatusRef = StatusRef.create(createProxy);
+		const status = useStatusRef('loading', 'initial').onInitial();
 		expect(status.loading).toBe(false);
 		expect(status.initial).toBe(true);
 		status.offInitial();
@@ -65,8 +65,8 @@ describe('useStatusRef', () => {
 	});
 
 	it('trigger by callback', async () => {
-		const create = useStatusRef.create(createProxy);
-		const status = create('loading');
+		const useStatusRef = StatusRef.create(createProxy);
+		const status = useStatusRef('loading');
 		let i = 0;
 		status.listenOnLoading(() => {
 			i = 1;
@@ -80,5 +80,30 @@ describe('useStatusRef', () => {
 		status.offLoading();
 		await delay(0);
 		expect(i).toBe(2);
+	});
+
+	it('set initial value', () => {
+		const useStatusRef = StatusRef.create(createProxy);
+		const status = useStatusRef('loading', ['initial', true]);
+		expect(status.loading).toBe(false);
+		expect(status.initial).toBe(true);
+		status.toggle();
+		expect(status.loading).toBe(true);
+		expect(status.initial).toBe(false);
+	});
+
+	it('set full initial value', () => {
+		const useStatusRef = StatusRef.create(createProxy);
+		const status = useStatusRef.initial(true).use('loading', 'success');
+		expect(status.loading).toBe(true);
+		expect(status.success).toBe(true);
+		status.toggleLoading();
+		expect(status.loading).toBe(false);
+		expect(status.success).toBe(true);
+	});
+
+	it('check type', () => {
+		type Status = StatusRefResult<['loading']>;
+		expectTypeOf<Fn<[], Status>>().toMatchTypeOf<Status['onLoading']>();
 	});
 });

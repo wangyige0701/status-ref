@@ -71,3 +71,17 @@ export type StatusRefResult<T extends string[]> = StatusRefMultiple<T> & {
 	toggle: () => StatusRefResult<T>;
 	stop: () => void;
 };
+
+export type Params = ([string, boolean] | string)[];
+
+export type ParseParams<
+	T extends Params,
+	A = [],
+	F = FirstElement<T>,
+> = T['length'] extends 0
+	? A
+	: F extends [string, boolean]
+		? ParseParams<RestElements<T>, [...A, F[0]]>
+		: F extends string
+			? ParseParams<RestElements<T>, [...A, F]>
+			: never;

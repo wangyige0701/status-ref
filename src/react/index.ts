@@ -1,10 +1,10 @@
 import type { Dispatch, SetStateAction } from 'react';
 import { useState } from 'react';
-import { useStatusRef, type StatusRef } from '@/index';
+import { StatusRefResult, StatusRef } from '@/index';
 
-export type { StatusRef };
+export type { StatusRefResult };
 
-export const useReactStatusRef = useStatusRef.Proxy((_, initial) => {
+export const useReactStatusRef = StatusRef.create((_, initial) => {
 	let status: boolean;
 	let setStatus: Dispatch<SetStateAction<boolean>>;
 	return {
