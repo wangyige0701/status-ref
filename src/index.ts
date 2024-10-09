@@ -61,5 +61,5 @@ export const StatusRef = (() => {
 		}
 	}
 
-	return singleton(StatusRef) as typeof StatusRef;
+	return singleton(StatusRef);
 })();
