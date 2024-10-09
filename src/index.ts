@@ -1,4 +1,4 @@
-import { singleton } from '@wang-yige/utils';
+import { isBoolean, singleton } from '@wang-yige/utils';
 import type { StatusRefResult, CreateProxy, Params, ParseParams } from './type';
 import { createStatusRef, parseParams } from './utils';
 
@@ -26,17 +26,31 @@ export const StatusRef = (() => {
 		}
 
 		/**
+		 * Create a status ref instance which can be directly called to create status refs.
+		 * - The initial method can be called to set the initial status.
 		 * @param createProxy Function return track and trigger function,
 		 * which received the target key and the initial boolean status.
-		 * - `track`: If it return a not void value, the result will be used as the status return value.
+		 * - `track`: If the return value is not void, the result will be used as the status getter return.
 		 * - `trigger`: Custom trigger logic.
 		 */
 		static create(createProxy: CreateProxy) {
 			const statusRef = new (singleton(StatusRef, createProxy))();
+			/**
+			 * Pass in status to create a status ref object.
+			 * @param status A string or an array of `[string, boolean]`.
+			 */
 			const _use = <T extends Params>(...status: T) => {
 				return statusRef.use(status);
 			};
+			/**
+			 * Set all status initial value to the `bool`.
+			 */
 			_use.initial = (bool: boolean) => {
+				if (!isBoolean(bool)) {
+					throw new TypeError(
+						'Initial status must be a boolean\ntarget: ' + bool,
+					);
+				}
 				return {
 					use: <T extends Params>(...status: T) => {
 						return statusRef.use(status, bool);
