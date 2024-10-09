@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@wang-yige/utils':
-        specifier: ^0.0.7
-        version: 0.0.7
+        specifier: ^0.0.9
+        version: 0.0.9
     devDependencies:
       '@rollup/plugin-alias':
         specifier: ^5.1.1
@@ -437,8 +437,8 @@ packages:
   '@vue/shared@3.5.8':
     resolution: {integrity: sha512-mJleSWbAGySd2RJdX1RBtcrUBX6snyOc0qHpgk3lGi4l9/P/3ny3ELqFWqYdkXIwwNN/kdm8nD9ky8o6l/Lx2A==}
 
-  '@wang-yige/utils@0.0.7':
-    resolution: {integrity: sha512-efOyMlRT0dcuD5Jis4pC0xs7UyKumxjpQaqRr8oBc6NpiobHM9VV0TZFF9PIfcvaUmd24qpkYA6PY4/YYmTCpg==}
+  '@wang-yige/utils@0.0.9':
+    resolution: {integrity: sha512-VU3AR08kOMKNxgRY4DdQoU7reavLOPIaRWB+YOG9kJ+xR/wvA/p1EMe94ETP0Mz7CX4C0IH6q63HqeVdnkQc1Q==}
 
   agent-base@7.1.1:
     resolution: {integrity: sha512-H0TSyFNDMomMNJQBn8wFV5YC/2eJ+VXECwOadZJT554xP6cODZHPX3H9QMQECxvrgiSOP1pHjy1sMWQVYJOUOA==}
@@ -1453,7 +1453,7 @@ snapshots:
 
   '@vue/shared@3.5.8': {}
 
-  '@wang-yige/utils@0.0.7': {}
+  '@wang-yige/utils@0.0.9': {}
 
   agent-base@7.1.1:
     dependencies:
