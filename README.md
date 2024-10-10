@@ -58,7 +58,7 @@ status.success; // true
 
 // Or you can pass in an array with status name and initial value.
 const status = useStatusRef('loading', ['error', false], ['success', true]);
-status.loading; // true
+status.loading; // false
 status.error; // false
 status.success; // true
 ```
