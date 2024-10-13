@@ -8,7 +8,7 @@
 		"resolveJsonModule": true,
 		"strictNullChecks": true,
 		"esModuleInterop": true,
-		"skipLibCheck": true,
+		"skipLibCheck": false,
 		"experimentalDecorators": true,
 		"jsx": "react",
 		"baseUrl": ".",

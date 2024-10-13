@@ -102,11 +102,6 @@ export const createStatusRef = <T extends Params>(
 ) => {
 	const map = new Map<string, StatusRefValue>();
 	const _this = Object.create(null) as StatusRefResult<ParseParams<T>>;
-	const _clear = (key: string) => {
-		if (key) {
-			map.delete(key);
-		}
-	};
 	setProp(_this, 'on', () => {
 		map.forEach(v => v.setValue(true));
 		return _this;
@@ -118,9 +113,6 @@ export const createStatusRef = <T extends Params>(
 	setProp(_this, 'toggle', () => {
 		map.forEach(v => v.setValue(!v.value));
 		return _this;
-	});
-	setProp(_this, 'stop', () => {
-		[...map.keys()].forEach(_clear);
 	});
 	const keys = Object.keys(status);
 	const length = keys.length;

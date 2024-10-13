@@ -22,7 +22,10 @@ export const StatusRef = (() => {
 					'Need use `create` function to pass track and trigger methods',
 				);
 			}
-			return createStatusRef(this.#proxy, parseParams(initial, status));
+			return createStatusRef<T>(
+				this.#proxy,
+				parseParams(initial, status),
+			);
 		}
 
 		/**
@@ -58,6 +61,15 @@ export const StatusRef = (() => {
 				};
 			};
 			return _use;
+		}
+
+		/**
+		 * To create a custom initial value status,
+		 * used to type inference.
+		 * - Return an array of `[string, boolean]`.
+		 */
+		static T<T extends string>(status: T, bool: boolean): [T, boolean] {
+			return [status, bool];
 		}
 	}
 

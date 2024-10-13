@@ -58,25 +58,24 @@ type StatusRefSingle<T extends string, ALL extends string[]> = {
 		| `listenOff${Capitalize<K>}`]: ListenFunction<ALL>;
 };
 
-type StatusRefMultiple<T extends string[], ALL = T> = T extends []
+type StatusRefMultiple<T extends string[], ALL extends string[]> = T extends []
 	? {}
 	: T['length'] extends 1
-		? StatusRefSingle<FirstElement<T>, ALL>
-		: StatusRefSingle<FirstElement<T>, ALL> &
+		? StatusRefSingle<FirstElement<T> & string, ALL>
+		: StatusRefSingle<FirstElement<T> & string, ALL> &
 				StatusRefMultiple<RestElements<T>, ALL>;
 
-export type StatusRefResult<T extends string[]> = StatusRefMultiple<T> & {
+export type StatusRefResult<T extends string[]> = StatusRefMultiple<T, T> & {
 	on: () => StatusRefResult<T>;
 	off: () => StatusRefResult<T>;
 	toggle: () => StatusRefResult<T>;
-	stop: () => void;
 };
 
 export type Params = ([string, boolean] | string)[];
 
 export type ParseParams<
 	T extends Params,
-	A = [],
+	A extends string[] = [],
 	F = FirstElement<T>,
 > = T['length'] extends 0
 	? A
