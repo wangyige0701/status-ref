@@ -84,12 +84,17 @@ describe('StatusRef', () => {
 
 	it('set initial value', () => {
 		const useStatusRef = StatusRef.create(createProxy);
-		const status = useStatusRef('loading', ['initial', true]);
+		const status = useStatusRef(
+			'loading',
+			['success', true] as const,
+			StatusRef.T('initial', true),
+		);
 		expect(status.loading).toBe(false);
 		expect(status.initial).toBe(true);
 		status.toggle();
 		expect(status.loading).toBe(true);
 		expect(status.initial).toBe(false);
+		expect(status.success).toBe(false);
 	});
 
 	it('set full initial value', () => {
@@ -103,6 +108,9 @@ describe('StatusRef', () => {
 	});
 
 	it('check type', () => {
+		const useStatusRef = StatusRef.create(createProxy);
+		const status = useStatusRef('a', 'b', 'c', 'd', 'e', 'f');
+		expectTypeOf(status.f).toMatchTypeOf<boolean>();
 		type Status = StatusRefResult<['loading']>;
 		expectTypeOf<Fn<[], Status>>().toMatchTypeOf<Status['onLoading']>();
 	});
