@@ -80,7 +80,7 @@ status.error; // false
 
 ```html
 <script setup>
-	import { useVueStatusRef } from 'status-ref';
+	import { useVueStatusRef } from 'status-ref/vue';
 
 	// The usage is same as `useStatusRef`.
 	const status = useVueStatusRef('loading');
@@ -94,7 +94,7 @@ status.error; // false
 > For `react`
 
 ```jsx
-import { useReactStatusRef } from 'status-ref';
+import { useReactStatusRef } from 'status-ref/react';
 
 // It must out of the component,
 // otherwise it will be recreated every time the component is rendered.
