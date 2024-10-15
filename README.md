@@ -12,6 +12,10 @@ A boolean status controller, can track and trigger status changes.
 
 ### Usage
 
+#### Create a status ref instance.
+
+> First is use static method `StatusRef.create`, and it's recommended to use.
+
 ```ts
 import { StatusRef } from 'status-ref';
 
@@ -20,19 +24,39 @@ import { StatusRef } from 'status-ref';
 const useStatusRef = StatusRef.create(() => {
 	return {
 		track(target: object, key: string) {
-			// where be called when use status
+			// Where be called when access status.
 			// If here return a not void value, it will be used to the status return;
 		},
 		trigger(target: object, key: string, status: boolean) {
-			// where be called when status changed
+			// Where be called when status changed.
 		},
 	};
 });
 
+// Create a status target.
 const status = useStatusRef('loading');
+```
 
-// Default is false, unless you use the `initial` to change the default value.
-// And only the `loading` property is enumerable.
+> Second is use `new` to create an instance directly.
+
+```ts
+const useStatusRef = new StatusRef(() => {
+	return {
+		track(target: object, key: string) {},
+		trigger(target: object, key: string, status: boolean) {},
+	};
+});
+
+// It need use `use` method to create a status target.
+const status = useStatusRef.use('loading');
+```
+
+#### Properties
+
+```ts
+// The default status value is `false`,
+// unless you use the `initial` to change the default value,
+// and only the status read property like `loading` is enumerable.
 status.loading;
 
 // Operate all of the status.
@@ -44,13 +68,14 @@ status.toggle();
 status.onLoading();
 status.offLoading();
 status.toggleLoading();
+
 // If the status is matched when register the callback,
 // you can pass `true` to the second parameter to immediately call the callback.
 status.listenOnLoading(() => {});
 status.listenOffLoading(() => {});
 ```
 
-> Set initial value
+#### Set initial value
 
 ```ts
 // You can use `initial` method to set all status initial value.
@@ -69,14 +94,14 @@ status.success; // true
 const status = useStatusRef(
 	'loading',
 	['success', true] as const,
-	StatusRef.T('error', false),
+	StatusRef.T('allow', true),
 );
 status.loading; // false
 status.success; // true
-status.error; // false
+status.allow; // true
 ```
 
-> For `vue`
+#### For `vue`
 
 ```html
 <script setup>
@@ -91,7 +116,7 @@ status.error; // false
 </template>
 ```
 
-> For `react`
+#### For `react`
 
 ```jsx
 import { useReactStatusRef } from 'status-ref/react';
