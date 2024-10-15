@@ -133,6 +133,8 @@ describe('StatusRef', () => {
 		const status = useStatus.initial(true).use('loading', 'success');
 		expect(status.loading).toBe(true);
 		expect(status.success).toBe(true);
+		const status2 = useStatus.use('loading');
+		expect(status2.loading).toBe(false);
 	});
 
 	it('check custom status for instance', () => {
