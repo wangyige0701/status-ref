@@ -114,4 +114,40 @@ describe('StatusRef', () => {
 		type Status = StatusRefResult<['loading']>;
 		expectTypeOf<Fn<[], Status>>().toMatchTypeOf<Status['onLoading']>();
 	});
+
+	it('use new to instantiate', () => {
+		const useStatus = new StatusRef(createProxy);
+		const status = useStatus.use('loading', 'success');
+		expect(status.loading).toBe(false);
+		expect(status.success).toBe(false);
+		status.toggle();
+		expect(status.loading).toBe(true);
+		status.toggleSuccess();
+		expect(status.success).toBe(false);
+		status.onLoading();
+		expect(status.loading).toBe(true);
+	});
+
+	it('check initial status for instance', () => {
+		const useStatus = new StatusRef(createProxy);
+		const status = useStatus.initial(true).use('loading', 'success');
+		expect(status.loading).toBe(true);
+		expect(status.success).toBe(true);
+	});
+
+	it('check custom status for instance', () => {
+		const useStatus = new StatusRef(createProxy);
+		const status = useStatus.use(
+			'loading',
+			['success', true] as const,
+			StatusRef.T('error', true),
+		);
+		expect(status.loading).toBe(false);
+		expect(status.success).toBe(true);
+		expect(status.error).toBe(true);
+		status.toggleSuccess().toggleLoading().toggleError();
+		expect(status.loading).toBe(true);
+		expect(status.success).toBe(false);
+		expect(status.error).toBe(false);
+	});
 });
