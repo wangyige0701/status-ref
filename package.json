@@ -1,6 +1,6 @@
 {
 	"name": "status-ref",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"description": "A boolean status controller, can track and trigger status changes",
 	"type": "module",
 	"main": "dist/index.cjs",
@@ -21,7 +21,8 @@
 			"require": "./dist/react/index.cjs",
 			"import": "./dist/react/index.mjs",
 			"types": "./dist/react/index.d.ts"
-		}
+		},
+		"./*": "./*"
 	},
 	"sideEffects": false,
 	"files": [
