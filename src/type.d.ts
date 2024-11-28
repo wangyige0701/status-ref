@@ -6,8 +6,8 @@ import type {
 } from '@wang-yige/utils';
 
 export type StatusRefValue = {
-	getValue: () => boolean;
-	setValue: (value: boolean) => void;
+	getValue: (watch?: (key: string) => void) => boolean;
+	setValue: (value: boolean) => any;
 	value: boolean;
 };
 
@@ -65,22 +65,57 @@ type StatusRefMultiple<T extends string[], ALL extends string[]> = T extends []
 		: StatusRefSingle<FirstElement<T> & string, ALL> &
 				StatusRefMultiple<RestElements<T>, ALL>;
 
-export type StatusRefResult<T extends string[]> = StatusRefMultiple<T, T> & {
-	on: () => StatusRefResult<T>;
-	off: () => StatusRefResult<T>;
-	toggle: () => StatusRefResult<T>;
-};
+type StatusRefWatch<
+	W extends string[],
+	ALL extends string[],
+> = W['length'] extends 0
+	? {}
+	: StatusRefWatch<RestElements<W>, ALL> & { [K in W[0]]: boolean } & {
+			[K in W[0] as
+				| `listenOn${Capitalize<K>}`
+				| `listenOff${Capitalize<K>}`]: ListenFunction<ALL>;
+		};
 
-export type Params = ([string, boolean] | string)[];
+type WatchModeFunc = Fn<[bool: Fn<[key: string], boolean>], boolean>;
 
+export type Params = (string | [string, boolean] | [string, WatchModeFunc])[];
+
+export type ParseParamsResult = Record<
+	string,
+	| {
+			type: 'watch';
+			data: WatchModeFunc;
+	  }
+	| {
+			type: 'boolean';
+			data: boolean;
+	  }
+>;
+
+// prettier-ignore
 export type ParseParams<
 	T extends Params,
-	A extends string[] = [],
+	Result extends { status: string[], watch: string[] } = { status: [], watch: [] },
 	F = FirstElement<T>,
 > = T['length'] extends 0
-	? A
+	? Result
+	: F extends [string, WatchModeFunc]
+		? ParseParams<RestElements<T>, { status: Result['status'], watch: [...Result['watch'], F[0]] }>
 	: F extends [string, boolean]
-		? ParseParams<RestElements<T>, [...A, F[0]]>
+		? ParseParams<RestElements<T>, { status: [...Result['status'], F[0]], watch: Result['watch'] }>
 		: F extends string
-			? ParseParams<RestElements<T>, [...A, F]>
+			? ParseParams<RestElements<T>, { status: [...Result['status'], F], watch: Result['watch']}>
 			: never;
+
+export type ParseStatusRefResult<
+	T extends { status: string[]; watch: string[] },
+> = StatusRefResult<T['status'], T['watch']>;
+
+export type StatusRefResult<
+	T extends string[],
+	W extends string[] = [],
+> = StatusRefMultiple<T, T> & {
+	on: () => StatusRefResult<T, W>;
+	off: () => StatusRefResult<T, W>;
+	toggle: () => StatusRefResult<T, W>;
+} & StatusRefWatch<W, W>;
