@@ -1,5 +1,11 @@
 import { isBoolean, isFunction } from '@wang-yige/utils';
-import type { StatusRefResult, CreateProxy, Params, ParseParams } from './type';
+import type {
+	StatusRefResult,
+	CreateProxy,
+	Params,
+	ParseParams,
+	ParseStatusRefResult,
+} from './type';
 import { createStatusRef, parseParams } from './utils';
 
 export type { StatusRefResult };
@@ -65,7 +71,7 @@ export class StatusRef {
 	 * status.listenOffLoading(() => {});
 	 * ```
 	 */
-	use<T extends Params>(...status: T): StatusRefResult<ParseParams<T>> {
+	use<T extends Params>(...status: T): ParseStatusRefResult<ParseParams<T>> {
 		if (!this.#proxy) {
 			throw new Error(
 				'Need use `create` function to pass track and trigger methods',
