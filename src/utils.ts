@@ -8,7 +8,6 @@ import {
 } from '@wang-yige/utils';
 import type {
 	StatusRefValue,
-	StatusRefResult,
 	StatusProxy,
 	CreateProxy,
 	ListenStatusCallback,
@@ -125,7 +124,7 @@ export const createStatusRef = <T extends Params>(
 		configurable: false,
 		enumerable: false,
 	};
-	const map = new Map<string, StatusRefValue>();
+	const _map = new Map<string, StatusRefValue>();
 	const _this = Object.create(null) as ParseStatusRefResult<ParseParams<T>>;
 
 	function setProp(_this: any, s: string, value: Function) {
@@ -135,15 +134,15 @@ export const createStatusRef = <T extends Params>(
 		});
 	}
 	setProp(_this, 'on', () => {
-		map.forEach(v => v.setValue(true));
+		_map.forEach(v => v.setValue(true));
 		return _this;
 	});
 	setProp(_this, 'off', () => {
-		map.forEach(v => v.setValue(false));
+		_map.forEach(v => v.setValue(false));
 		return _this;
 	});
 	setProp(_this, 'toggle', () => {
-		map.forEach(v => v.setValue(!v.value));
+		_map.forEach(v => v.setValue(!v.value));
 		return _this;
 	});
 
@@ -163,18 +162,18 @@ export const createStatusRef = <T extends Params>(
 				if (_key === key) {
 					throw new Error('Status can not watch itself');
 				}
-				if (!map.has(_key)) {
+				if (!_map.has(_key)) {
 					throw new Error(
 						`Status \'${_key}\' is not exist, the status names must already been registered`,
 					);
 				}
-				return map.get(_key)!.getValue(_refresh);
+				return _map.get(_key)!.getValue(_refresh);
 			};
 			const _get = (_key: string) => {
-				return map.get(_key)!.value;
+				return _map.get(_key)!.value;
 			};
 			const _refresh = (_key: string) => {
-				map.get(key)!.setValue(watchFunc(_get));
+				_map.get(key)!.setValue(watchFunc(_get));
 			};
 			initialValue = watchFunc(_use);
 			if (!isBoolean(initialValue)) {
@@ -196,7 +195,7 @@ export const createStatusRef = <T extends Params>(
 			}
 			__FunctionCheck.set(createProxy, true);
 		}
-		map.set(
+		_map.set(
 			key,
 			createStatusRefValue(
 				_this,
@@ -216,22 +215,22 @@ export const createStatusRef = <T extends Params>(
 				[`on${Upper}`]: {
 					...CONFIG,
 					value: () => {
-						map.get(key)!.setValue(true);
+						_map.get(key)!.setValue(true);
 						return _this;
 					},
 				},
 				[`off${Upper}`]: {
 					...CONFIG,
 					value: () => {
-						map.get(key)!.setValue(false);
+						_map.get(key)!.setValue(false);
 						return _this;
 					},
 				},
 				[`toggle${Upper}`]: {
 					...CONFIG,
 					value: () => {
-						const oldValue = map.get(key)!.value;
-						map.get(key)!.setValue(!oldValue);
+						const oldValue = _map.get(key)!.value;
+						_map.get(key)!.setValue(!oldValue);
 						return _this;
 					},
 				},
@@ -242,7 +241,7 @@ export const createStatusRef = <T extends Params>(
 				...CONFIG,
 				enumerable: true,
 				get: () => {
-					return map.get(key)!.getValue();
+					return _map.get(key)!.getValue();
 				},
 			},
 			[`listenOn${Upper}`]: {
@@ -252,7 +251,7 @@ export const createStatusRef = <T extends Params>(
 					immediate: boolean = false,
 				) => {
 					listenOn.push(cb);
-					if (immediate && map.get(key)!.value) {
+					if (immediate && _map.get(key)!.value) {
 						cb(_this, key, true);
 					}
 				},
@@ -264,7 +263,7 @@ export const createStatusRef = <T extends Params>(
 					immediate: boolean = false,
 				) => {
 					listenOff.push(cb);
-					if (immediate && !map.get(key)!.value) {
+					if (immediate && !_map.get(key)!.value) {
 						cb(_this, key, false);
 					}
 				},
