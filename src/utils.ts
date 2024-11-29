@@ -270,6 +270,7 @@ export const createStatusRef = <T extends Params>(
 			},
 			...special,
 		});
+		special = null;
 	}
 	return _this;
 };

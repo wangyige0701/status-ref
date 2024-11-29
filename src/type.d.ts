@@ -101,11 +101,11 @@ export type ParseParams<
 	? Result
 	: F extends [string, WatchModeFunc]
 		? ParseParams<RestElements<T>, { status: Result['status'], watch: [...Result['watch'], F[0]] }>
-	: F extends [string, boolean]
-		? ParseParams<RestElements<T>, { status: [...Result['status'], F[0]], watch: Result['watch'] }>
-		: F extends string
-			? ParseParams<RestElements<T>, { status: [...Result['status'], F], watch: Result['watch']}>
-			: never;
+		: F extends [string, boolean]
+			? ParseParams<RestElements<T>, { status: [...Result['status'], F[0]], watch: Result['watch'] }>
+			: F extends string
+				? ParseParams<RestElements<T>, { status: [...Result['status'], F], watch: Result['watch']}>
+				: never;
 
 export type ParseStatusRefResult<
 	T extends { status: string[]; watch: string[] },
