@@ -12,9 +12,9 @@ import type {
 	CreateProxy,
 	ListenStatusCallback,
 	Params,
-	ParseParams,
 	ParseParamsResult,
 	ParseStatusRefResult,
+	ParseParams,
 } from './type';
 
 type TriggerWatch = (key: string) => void;

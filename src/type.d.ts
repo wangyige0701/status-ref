@@ -46,20 +46,28 @@ type ListenFunction<ALL extends string[]> = Fn<
 	StatusRefResult<ALL>
 >;
 
-type StatusRefSingle<T extends string, ALL extends string[]> = {
-	[K in T]: boolean;
-} & {
+type Change<T extends string, ALL extends string[]> = {
 	[K in T as
 		| `on${Capitalize<K>}`
 		| `off${Capitalize<K>}`
 		| `toggle${Capitalize<K>}`]: () => StatusRefResult<ALL>;
-} & {
+};
+
+type Listen<T extends string, ALL extends string[]> = {
 	[K in T as
 		| `listenOn${Capitalize<K>}`
 		| `listenOff${Capitalize<K>}`]: ListenFunction<ALL>;
 };
 
-type StatusRefMultiple<T extends string[], ALL extends string[]> = T extends []
+type StatusRefSingle<T extends string, ALL extends string[]> = {
+	[K in T]: boolean;
+} & Change<T, ALL> &
+	Listen<T, ALL>;
+
+type StatusRefMultiple<
+	T extends string[],
+	ALL extends string[],
+> = T['length'] extends 0
 	? {}
 	: T['length'] extends 1
 		? StatusRefSingle<FirstElement<T> & string, ALL>
@@ -71,11 +79,8 @@ type StatusRefWatch<
 	ALL extends string[],
 > = W['length'] extends 0
 	? {}
-	: StatusRefWatch<RestElements<W>, ALL> & { [K in W[0]]: boolean } & {
-			[K in W[0] as
-				| `listenOn${Capitalize<K>}`
-				| `listenOff${Capitalize<K>}`]: ListenFunction<ALL>;
-		};
+	: Listen<W[0], ALL> &
+			StatusRefWatch<RestElements<W>, ALL> & { [K in W[0]]: boolean };
 
 type WatchModeFunc = Fn<[bool: Fn<[key: string], boolean>], boolean>;
 
@@ -120,3 +125,40 @@ export type StatusRefResult<
 	off: () => StatusRefResult<T, W>;
 	toggle: () => StatusRefResult<T, W>;
 } & StatusRefWatch<W, W>;
+
+export declare class StatusRefImplement {
+	/**
+	 * Pass in status to create a status target.
+	 * @param status A string or an array of `[string, boolean]`.
+	 * @example
+	 * ```ts
+	 * const status = useStatusRef.use('loading', ['error', true], StausRef.T('initial', true));
+	 * status.loading; // false
+	 * status.error; // true
+	 * status.initial; // true
+	 * status.onLoading().offError().toggleInitial();
+	 * status.on().off().toggle();
+	 * status.listenOnLoading(() => {});
+	 * status.listenOffLoading(() => {});
+	 * ```
+	 * @example watch mode
+	 * ```ts
+	 * const status = useStatusRef.use('loading', StausRef.T('success', use => !use('loading')));
+	 * status.loading; // false
+	 * status.success; // true, and `success` does not have `onSuccess`, `offSuccess`, `toggleSuccess` methods.
+	 * ```
+	 */
+	use<T extends Params>(...status: T): ParseStatusRefResult<ParseParams<T>>;
+	/**
+	 * Set all status initial value to the `bool`.
+	 */
+	initial(bool: boolean): InitialStatusRef;
+}
+
+export type InitialStatusRef = {
+	use: StatusRefImplement['use'];
+};
+
+export type UseStatusRef = StatusRefImplement['use'] & {
+	initial: StatusRefImplement['initial'];
+};
