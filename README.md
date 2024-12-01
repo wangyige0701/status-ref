@@ -108,7 +108,7 @@ status.allow; // true
 // and the watch properties does not have `on`, `off`, `toggle` methods.
 const status = useStatusRef(
 	'loading',
-	// use param can get the status value which is registered before.
+	// `use` param can get the status value which is registered before.
 	['success', use => !use('loading')] as const,
 	StatusRef.T('failed', use => !use('success')),
 );
