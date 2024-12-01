@@ -101,6 +101,22 @@ status.success; // true
 status.allow; // true
 ```
 
+#### For watch mode
+
+```ts
+// When register a watch status, the status name in callback maut already be registered,
+// and the watch properties does not have `on`, `off`, `toggle` methods.
+const status = useStatusRef(
+	'loading',
+	// use param can get the status value which is registered before.
+	['success', use => !use('loading')] as const,
+	StatusRef.T('failed', use => !use('success')),
+);
+status.loading; // false, has `onLoading`, `offLoading`, `toggleLoading` methods.
+status.success; // true, does not have `onSuccess`, `offSuccess`, `toggleSuccess` methods.
+status.failed; // false
+```
+
 #### For `vue`
 
 ```html
