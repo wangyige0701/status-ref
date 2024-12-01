@@ -82,7 +82,7 @@ type StatusRefWatch<
 	: Listen<W[0], ALL> &
 			StatusRefWatch<RestElements<W>, ALL> & { [K in W[0]]: boolean };
 
-type WatchModeFunc = Fn<[bool: Fn<[key: string], boolean>], boolean>;
+export type WatchModeFunc = Fn<[bool: Fn<[key: string], boolean>], boolean>;
 
 export type Params = (string | [string, boolean] | [string, WatchModeFunc])[];
 
