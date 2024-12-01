@@ -29,10 +29,12 @@ const createStatusRefValue = (
 	trigger: StatusProxy['trigger'],
 	listenOn: ListenStatusCallback[],
 	listenOff: ListenStatusCallback[],
+	isWatch: boolean,
 ) => {
 	let watchDeps: null | Array<TriggerWatch> = null;
 	let value: boolean = bool;
 	const result = {
+		__isWatch: isWatch,
 		getValue: (watch?: TriggerWatch) => {
 			if (watch) {
 				if (!watchDeps) {
@@ -54,23 +56,23 @@ const createStatusRefValue = (
 			}
 			value = v;
 			trigger(target, key, value);
-			const list = value ? listenOn : listenOff;
-			for (const func of list) {
-				await func?.(target, key, value);
-			}
+			const listen = value ? listenOn : listenOff;
 			if (watchDeps) {
 				watchDeps.forEach(watch => {
-					watch?.(key);
+					watch && watch(key);
 				});
+			}
+			for (const func of listen) {
+				if (func) {
+					await func(target, key, value);
+				}
 			}
 		},
 	};
 	Object.defineProperty(result, 'value', {
 		configurable: false,
 		enumerable: false,
-		get: () => {
-			return value;
-		},
+		get: () => value,
 	});
 	return result as StatusRefValue;
 };
@@ -127,22 +129,22 @@ export const createStatusRef = <T extends Params>(
 	const _map = new Map<string, StatusRefValue>();
 	const _this = Object.create(null) as ParseStatusRefResult<ParseParams<T>>;
 
-	function setProp(_this: any, s: string, value: Function) {
+	function _setProp(_this: any, s: string, value: Function) {
 		Object.defineProperty(_this, s, {
 			...CONFIG,
 			value,
 		});
 	}
-	setProp(_this, 'on', () => {
-		_map.forEach(v => v.setValue(true));
+	_setProp(_this, 'on', () => {
+		_map.forEach(v => !v.__isWatch && v.setValue(true));
 		return _this;
 	});
-	setProp(_this, 'off', () => {
-		_map.forEach(v => v.setValue(false));
+	_setProp(_this, 'off', () => {
+		_map.forEach(v => !v.__isWatch && v.setValue(false));
 		return _this;
 	});
-	setProp(_this, 'toggle', () => {
-		_map.forEach(v => v.setValue(!v.value));
+	_setProp(_this, 'toggle', () => {
+		_map.forEach(v => !v.__isWatch && v.setValue(!v.value));
 		return _this;
 	});
 
@@ -151,20 +153,23 @@ export const createStatusRef = <T extends Params>(
 	for (let i = 0; i < length; i++) {
 		const key = keys[i];
 		const value = status[key];
-		const listenOn: ListenStatusCallback[] = []; //未调用
+		const listenOn: ListenStatusCallback[] = [];
 		const listenOff: ListenStatusCallback[] = [];
+		const isWatch = value.type === 'watch';
 		let track: StatusProxy['track'];
 		let trigger: StatusProxy['trigger'];
 		let initialValue: boolean;
-		if (value.type === 'watch') {
+		if (isWatch) {
 			const watchFunc = value.data;
 			const _use = (_key: string) => {
 				if (_key === key) {
-					throw new Error('Status can not watch itself');
+					throw new Error(
+						`Status can not watch itself, which name is \'${_key}\'`,
+					);
 				}
 				if (!_map.has(_key)) {
 					throw new Error(
-						`Status \'${_key}\' is not exist, the status names must already been registered`,
+						`Status \'${_key}\' is not exist, the status name must already been registered`,
 					);
 				}
 				return _map.get(_key)!.getValue(_refresh);
@@ -177,7 +182,9 @@ export const createStatusRef = <T extends Params>(
 			};
 			initialValue = watchFunc(_use);
 			if (!isBoolean(initialValue)) {
-				throw new Error('Watch function must return a boolean value');
+				throw new Error(
+					'In watch mode, the second function param must return a boolean value',
+				);
 			}
 		} else {
 			initialValue = value.data;
@@ -205,12 +212,13 @@ export const createStatusRef = <T extends Params>(
 				trigger,
 				listenOn,
 				listenOff,
+				isWatch,
 			),
 		);
 
 		const Upper = firstUpperCase(key);
 		let special = null;
-		if (value.type !== 'watch') {
+		if (!isWatch) {
 			special = {
 				[`on${Upper}`]: {
 					...CONFIG,
