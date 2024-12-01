@@ -4,6 +4,8 @@ import { StatusRefResult, StatusRef } from '@/index';
 
 export type { StatusRefResult };
 
+export { StatusRef };
+
 export const useReactStatusRef = StatusRef.create((_, initial) => {
 	let status: boolean;
 	let setStatus: Dispatch<SetStateAction<boolean>>;

@@ -3,6 +3,8 @@ import { type StatusRefResult, StatusRef } from '@/index';
 
 export type { StatusRefResult };
 
+export { StatusRef };
+
 export const useVueStatusRef = StatusRef.create(() => {
 	return {
 		track: (target, key) => {
