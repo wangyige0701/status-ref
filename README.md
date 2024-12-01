@@ -119,7 +119,7 @@ status.failed; // false
 
 #### For `vue`
 
-```html
+```vue
 <script setup>
 	import { useVueStatusRef } from 'status-ref/vue';
 
@@ -128,7 +128,7 @@ status.failed; // false
 </script>
 
 <template>
-	<div @click="status.toggleLoading()">{ status.loading }</div>
+	<div @click="status.toggleLoading()">{{ status.loading }}</div>
 </template>
 ```
 
