@@ -155,20 +155,25 @@ describe('StatusRef', () => {
 
 	it('use watch mode', () => {
 		const useStatus = new StatusRef(createProxy);
-		const status = useStatus.use('loading', 'end', [
-			'success',
-			use => !use('loading') && use('end'),
-		] as const);
+		const status = useStatus.use(
+			'loading',
+			'end',
+			['success', use => !use('loading') && use('end')] as const,
+			StatusRef.T('failed', use => !use('loading') && !use('end')),
+		);
 		let i = 0;
 		status.listenOnSuccess(() => {
 			i++;
 		});
 		expect(status.success).toBe(false);
+		expect(status.failed).toBe(true);
 		status.onEnd();
 		expect(status.success).toBe(true);
+		expect(status.failed).toBe(false);
 		expect(i).toBe(1);
 		status.onLoading();
 		expect(status.success).toBe(false);
+		expect(status.failed).toBe(false);
 		expect(i).toBe(1);
 	});
 });

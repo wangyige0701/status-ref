@@ -6,6 +6,7 @@ import type {
 } from '@wang-yige/utils';
 
 export type StatusRefValue = {
+	__isWatch: boolean;
 	getValue: (watch?: (key: string) => void) => boolean;
 	setValue: (value: boolean) => any;
 	value: boolean;

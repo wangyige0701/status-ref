@@ -5,6 +5,7 @@ import type {
 	Params,
 	ParseParams,
 	ParseStatusRefResult,
+	WatchModeFunc,
 } from './type';
 import { createStatusRef, parseParams } from './utils';
 
@@ -134,7 +135,10 @@ export class StatusRef {
 	 * - Return an array of `[string, boolean]`.
 	 * @param {string} status convert to string.
 	 */
-	static T<T extends string>(status: T, bool: boolean): [T, boolean] {
+	static T<T extends string, V extends boolean | WatchModeFunc>(
+		status: T,
+		bool: V,
+	): [T, V] {
 		return [String(status) as T, bool];
 	}
 }
