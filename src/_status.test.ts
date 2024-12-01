@@ -159,7 +159,7 @@ describe('StatusRef', () => {
 			'loading',
 			'end',
 			['success', use => !use('loading') && use('end')] as const,
-			StatusRef.T('failed', use => !use('loading') && !use('end')),
+			StatusRef.T('failed', use => !use('success')),
 		);
 		let i = 0;
 		status.listenOnSuccess(() => {
@@ -173,7 +173,7 @@ describe('StatusRef', () => {
 		expect(i).toBe(1);
 		status.onLoading();
 		expect(status.success).toBe(false);
-		expect(status.failed).toBe(false);
+		expect(status.failed).toBe(true);
 		expect(i).toBe(1);
 	});
 });
