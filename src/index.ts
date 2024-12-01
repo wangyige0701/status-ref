@@ -3,15 +3,16 @@ import type {
 	StatusRefResult,
 	CreateProxy,
 	Params,
-	ParseParams,
-	ParseStatusRefResult,
 	WatchModeFunc,
+	UseStatusRef,
+	StatusRefImplement,
+	InitialStatusRef,
 } from './type';
 import { createStatusRef, parseParams } from './utils';
 
 export type { StatusRefResult };
 
-export class StatusRef {
+export class StatusRef implements StatusRefImplement {
 	#proxy: CreateProxy;
 	#initial: boolean = false;
 
@@ -38,9 +39,6 @@ export class StatusRef {
 		this.#proxy = createProxy;
 	}
 
-	/**
-	 * Set all status initial value to the `bool`.
-	 */
 	initial(bool: boolean) {
 		if (!isBoolean(bool)) {
 			throw new TypeError(
@@ -54,25 +52,10 @@ export class StatusRef {
 					parseParams(bool, status),
 				);
 			},
-		};
+		} as InitialStatusRef;
 	}
 
-	/**
-	 * Pass in status to create a status target.
-	 * @param status A string or an array of `[string, boolean]`.
-	 * @example
-	 * ```ts
-	 * const status = useStatusRef.use('loading', ['error', true], StausRef.T('initial', true));
-	 * status.loading; // false
-	 * status.error; // true
-	 * status.initial; // true
-	 * status.onLoading().offError().toggleInitial();
-	 * status.on().off().toggle();
-	 * status.listenOnLoading(() => {});
-	 * status.listenOffLoading(() => {});
-	 * ```
-	 */
-	use<T extends Params>(...status: T): ParseStatusRefResult<ParseParams<T>> {
+	use<T extends Params>(...status: T) {
 		if (!this.#proxy) {
 			throw new Error(
 				'Need use `create` function to pass track and trigger methods',
@@ -102,31 +85,13 @@ export class StatusRef {
 	 */
 	static create(createProxy: CreateProxy) {
 		const statusRef = new StatusRef(createProxy);
-		/**
-		 * Pass in status to create a status ref object.
-		 * @param status A string or an array of `[string, boolean]`.
-		 * @example
-		 * ```ts
-		 * const status = useStatusRef.use('loading', ['error', true], StausRef.T('initial', true));
-		 * status.loading; // false
-		 * status.error; // true
-		 * status.initial; // true
-		 * status.onLoading().offError().toggleInitial();
-		 * status.on().off().toggle();
-		 * status.listenOnLoading(() => {});
-		 * status.listenOffLoading(() => {});
-		 * ```
-		 */
 		const _use = <T extends Params>(...status: T) => {
 			return statusRef.use(...status);
 		};
-		/**
-		 * Set all status initial value to the `bool`.
-		 */
 		_use.initial = (bool: boolean) => {
 			return statusRef.initial(bool);
 		};
-		return _use;
+		return _use as UseStatusRef;
 	}
 
 	/**
