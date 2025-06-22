@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ref, effect } from '@vue/reactivity';
+import { ref, effect } from 'vue';
 import { useVueStatusRef } from '.';
 
 describe('useVueStatusRef', () => {
