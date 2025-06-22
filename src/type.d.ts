@@ -88,14 +88,7 @@ export type Params = (string | [string, boolean] | [string, WatchModeFunc])[];
 
 export type ParseParamsResult = Record<
 	string,
-	| {
-			type: 'watch';
-			data: WatchModeFunc;
-	  }
-	| {
-			type: 'boolean';
-			data: boolean;
-	  }
+	{ type: 'watch'; data: WatchModeFunc } | { type: 'boolean'; data: boolean }
 >;
 
 // prettier-ignore

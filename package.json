@@ -1,6 +1,6 @@
 {
 	"name": "status-ref",
-	"version": "0.3.0",
+	"version": "1.0.0",
 	"description": "A boolean status controller, can track and trigger status changes",
 	"type": "module",
 	"main": "dist/index.cjs",
@@ -22,7 +22,7 @@
 			"import": "./dist/react/index.mjs",
 			"types": "./dist/react/index.d.ts"
 		},
-		"./*": "./*"
+		"./dist/*": "./dist/*"
 	},
 	"sideEffects": false,
 	"files": [
@@ -57,7 +57,6 @@
 		"@rollup/plugin-node-resolve": "^15.3.0",
 		"@testing-library/react": "^16.0.1",
 		"@types/react": "^18.3.8",
-		"@vue/reactivity": "^3.5.8",
 		"jsdom": "^25.0.1",
 		"prettier": "^3.3.3",
 		"react": "^18.3.1",
@@ -68,7 +67,8 @@
 		"rollup-plugin-typescript2": "^0.36.0",
 		"tslib": "^2.7.0",
 		"typescript": "^5.6.2",
-		"vitest": "^2.1.1"
+		"vitest": "^3.2.4",
+		"vue": "^3.5.17"
 	},
 	"packageManager": "pnpm@9.1.0"
 }

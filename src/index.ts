@@ -7,10 +7,12 @@ import type {
 	UseStatusRef,
 	StatusRefImplement,
 	InitialStatusRef,
+	ParseStatusRefResult,
+	ParseParams,
 } from './type';
 import { createStatusRef, parseParams } from './utils';
 
-export type { StatusRefResult };
+export type { StatusRefResult, Params, ParseStatusRefResult, ParseParams };
 
 export class StatusRef implements StatusRefImplement {
 	#proxy: CreateProxy;
@@ -30,19 +32,27 @@ export class StatusRef implements StatusRefImplement {
 	 * 		trigger(target: object, key: string, status: boolean) {},
 	 * 	};
 	 * });
+	 * useStatusRef.initial(true).use('loading');
 	 * ```
 	 */
 	constructor(createProxy: CreateProxy) {
 		if (!createProxy || !isFunction(createProxy)) {
-			throw new TypeError('`createProxy` must be a function');
+			throw new TypeError(
+				'`createProxy` must be a function: ' + createProxy,
+			);
 		}
 		this.#proxy = createProxy;
 	}
 
+	/**
+	 * Reset the default boolean value of the status ref.
+	 * - Default value is `false`.
+	 * - The `initial` method only works for the `use` method chained called.
+	 */
 	initial(bool: boolean) {
 		if (!isBoolean(bool)) {
 			throw new TypeError(
-				'Initial status must be a boolean\ntarget: ' + bool,
+				'Initial status must be a boolean.\nBut input target: ' + bool,
 			);
 		}
 		return {
@@ -55,6 +65,16 @@ export class StatusRef implements StatusRefImplement {
 		} as InitialStatusRef;
 	}
 
+	/**
+	 * Create the status ref with input status name.
+	 * @param status The status to be created.
+	 * @example
+	 * ```ts
+	 * const status = statusRef.use('loading');
+	 * status.loading; // false
+	 * status.onLoading(); // status.loading => true
+	 * ```
+	 */
 	use<T extends Params>(...status: T) {
 		if (!this.#proxy) {
 			throw new Error(
@@ -81,6 +101,8 @@ export class StatusRef implements StatusRefImplement {
 	 * 		trigger(target: object, key: string, status: boolean) {},
 	 * 	};
 	 * });
+	 * useStatusRef.initial(true).use('loading');
+	 * useStatusRef('loading');
 	 * ```
 	 */
 	static create(createProxy: CreateProxy) {
@@ -95,8 +117,8 @@ export class StatusRef implements StatusRefImplement {
 	}
 
 	/**
-	 * To create a custom initial value status,
-	 * used to type inference.
+	 * To create a custom initial value status, used to type inference.
+	 * In ts, can use `as const` to assertion and needn't use `StatusRef.T`.
 	 * - Return an array of `[string, boolean]`.
 	 * @param {string} status convert to string.
 	 */
