@@ -15,7 +15,7 @@ export { StatusRef };
  * 	<div v-else>Error!</div>
  * </template>
  * <script setup lang="ts">
- * import { useVueStatusRef } from 'StatusRef/vue';
+ * import { useVueStatusRef } from 'status-ref/vue';
  *
  * const status = useVueStatusRef('loading', ['success', true] as const);
  * status.loading // false

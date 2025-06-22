@@ -9,6 +9,8 @@ export { StatusRef };
 /**
  * @example
  * ```tsx
+ * import { useReactStatusRef } from 'status-ref/react';
+ *
  * export default function Status() {
  * 	const status = useReactStatusRef('loading', 'error');
  * 	return (

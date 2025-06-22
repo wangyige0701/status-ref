@@ -110,9 +110,9 @@ describe('StatusRef', () => {
 	it('check type', () => {
 		const useStatusRef = StatusRef.create(createProxy);
 		const status = useStatusRef('a', 'b', 'c', 'd', 'e', 'f');
-		expectTypeOf(status.f).toMatchTypeOf<boolean>();
+		expectTypeOf(status.f).toExtend<boolean>();
 		type Status = StatusRefResult<['loading']>;
-		expectTypeOf<Fn<[], Status>>().toMatchTypeOf<Status['onLoading']>();
+		expectTypeOf<Fn<[], Status>>().toExtend<Status['onLoading']>();
 	});
 
 	it('use new to instantiate', () => {

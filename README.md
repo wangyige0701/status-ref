@@ -79,12 +79,20 @@ status.listenOffLoading(() => {});
 
 ```ts
 // You can use `initial` method to set all status initial value.
+// The `initial` method only works for the `use` method chained called.
+// e.g. useStatusRef.initial(true);
+// useStatusRef.use('loding'); ==> The default value is still false
 const status = useStatusRef.initial(true).use('loading', 'success');
+
 status.loading; // true
 status.success; // true
 
 // Or you can pass in an array with status name and initial value.
-const status = useStatusRef('loading', ['error', false], ['success', true]);
+const status = useStatusRef(
+	'loading',
+	['error', false] as const,
+	StatusRef.T('success', true),
+);
 status.loading; // false
 status.error; // false
 status.success; // true
@@ -120,11 +128,11 @@ status.failed; // false
 #### For `vue`
 
 ```vue
-<script setup>
-	import { useVueStatusRef } from 'status-ref/vue';
+<script setup lang="ts">
+import { useVueStatusRef } from 'status-ref/vue';
 
-	// The usage is same as `useStatusRef`.
-	const status = useVueStatusRef('loading');
+// The usage is same as `useStatusRef`.
+const status = useVueStatusRef('loading');
 </script>
 
 <template>
@@ -137,11 +145,10 @@ status.failed; // false
 ```jsx
 import { useReactStatusRef } from 'status-ref/react';
 
-// It must out of the component,
-// otherwise it will be recreated every time the component is rendered.
-const status = useReactStatusRef('loading');
-
+// In version 1.0.0, the usage is same as a hook.
 export default function App() {
+	const status = useReactStatusRef('loading');
+
 	return <div onclick={status.toggleLoading()}>{status.loading}</div>;
 }
 ```
