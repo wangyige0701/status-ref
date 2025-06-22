@@ -1,9 +1,9 @@
 import React from 'react';
 import { useReactStatusRef } from '@/react';
 
-const status = useReactStatusRef('loading', 'initial');
-
 export default function Status() {
+	const status = useReactStatusRef('loading', 'initial');
+
 	return (
 		<div style={{ width: '100px' }}>
 			<div data-testid="change">{status.loading + ''}</div>
