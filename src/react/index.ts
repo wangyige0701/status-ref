@@ -1,6 +1,11 @@
 import { useState } from 'react';
-import type { ParseParams, Params, ParseStatusRefResult } from '@/index';
-import { StatusRefResult, StatusRef } from '@/index';
+import type {
+	StatusRefResult,
+	ParseParams,
+	Params,
+	ParseStatusRefResult,
+} from '@/index';
+import { StatusRef } from '@/index';
 
 export type { StatusRefResult };
 

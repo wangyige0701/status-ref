@@ -27,6 +27,9 @@ importers:
       '@types/react':
         specifier: ^18.3.8
         version: 18.3.8
+      '@vue/reactivity':
+        specifier: ^3.5.17
+        version: 3.5.17
       jsdom:
         specifier: ^25.0.1
         version: 25.0.1

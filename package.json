@@ -30,7 +30,8 @@
 	],
 	"scripts": {
 		"build": "rollup -c",
-		"test": "vitest"
+		"test": "vitest",
+		"push": "npm publish --access=public"
 	},
 	"keywords": [
 		"vue",
@@ -57,6 +58,7 @@
 		"@rollup/plugin-node-resolve": "^15.3.0",
 		"@testing-library/react": "^16.0.1",
 		"@types/react": "^18.3.8",
+		"@vue/reactivity": "^3.5.17",
 		"jsdom": "^25.0.1",
 		"prettier": "^3.3.3",
 		"react": "^18.3.1",
