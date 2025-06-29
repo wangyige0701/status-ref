@@ -1,6 +1,6 @@
 {
 	"name": "status-ref",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "A boolean status controller, can track and trigger status changes",
 	"type": "module",
 	"main": "dist/index.cjs",
