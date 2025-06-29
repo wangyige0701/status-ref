@@ -31,7 +31,7 @@
 	"scripts": {
 		"build": "rollup -c",
 		"test": "vitest",
-		"push": "npm publish --access=public"
+		"push": "pnpm run build && npm publish --access=public"
 	},
 	"keywords": [
 		"vue",
