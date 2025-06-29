@@ -162,18 +162,51 @@ describe('StatusRef', () => {
 			StatusRef.T('failed', use => !use('success')),
 		);
 		let i = 0;
-		status.listenOnSuccess(() => {
+		let j = 0;
+		const closeOn = status.listenOnSuccess(() => {
 			i++;
 		});
+		const closeOff = status.listenOffEnd(() => {
+			j++;
+		}, true);
+		expect(status.loading).toBe(false);
+		expect(status.end).toBe(false);
 		expect(status.success).toBe(false);
 		expect(status.failed).toBe(true);
+
 		status.onEnd();
+		expect(status.loading).toBe(false);
+		expect(status.end).toBe(true);
 		expect(status.success).toBe(true);
 		expect(status.failed).toBe(false);
 		expect(i).toBe(1);
+
 		status.onLoading();
+		expect(status.loading).toBe(true);
+		expect(status.end).toBe(true);
 		expect(status.success).toBe(false);
 		expect(status.failed).toBe(true);
 		expect(i).toBe(1);
+
+		closeOn();
+		status.offLoading();
+		expect(status.loading).toBe(false);
+		expect(status.end).toBe(true);
+		expect(status.success).toBe(true);
+		expect(status.failed).toBe(false);
+		expect(i).toBe(1);
+
+		status.offEnd();
+		expect(status.loading).toBe(false);
+		expect(status.end).toBe(false);
+		expect(status.success).toBe(false);
+		expect(status.failed).toBe(true);
+		expect(i).toBe(1);
+		expect(j).toBe(2);
+
+		closeOff();
+		status.onEnd();
+		status.offEnd();
+		expect(j).toBe(2);
 	});
 });

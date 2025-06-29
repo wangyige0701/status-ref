@@ -56,13 +56,12 @@ const createStatusRefValue = (
 			}
 			value = v;
 			trigger(target, key, value);
-			const listen = value ? listenOn : listenOff;
 			if (watchDeps) {
 				watchDeps.forEach(watch => {
 					watch && watch(key);
 				});
 			}
-			for (const func of listen) {
+			for (const func of value ? listenOn : listenOff) {
 				if (func) {
 					await func(target, key, value);
 				}
@@ -160,7 +159,13 @@ export const createStatusRef = <T extends Params>(
 		let trigger: StatusProxy['trigger'];
 		let initialValue: boolean;
 		if (isWatch) {
-			const watchFunc = value.data;
+			const watchResult = value.data;
+			const _get = (_key: string) => {
+				return _map.get(_key)!.value;
+			};
+			const _refresh = (_key: string) => {
+				_map.get(key)!.setValue(watchResult(_get));
+			};
 			const _use = (_key: string) => {
 				if (_key === key) {
 					throw new Error(
@@ -174,13 +179,8 @@ export const createStatusRef = <T extends Params>(
 				}
 				return _map.get(_key)!.getValue(_refresh);
 			};
-			const _get = (_key: string) => {
-				return _map.get(_key)!.value;
-			};
-			const _refresh = (_key: string) => {
-				_map.get(key)!.setValue(watchFunc(_get));
-			};
-			initialValue = watchFunc(_use);
+			// 初始化
+			initialValue = watchResult(_use);
 			if (!isBoolean(initialValue)) {
 				throw new Error(
 					'In watch mode, the second function param must return a boolean value',
@@ -258,10 +258,15 @@ export const createStatusRef = <T extends Params>(
 					cb: ListenStatusCallback,
 					immediate: boolean = false,
 				) => {
-					listenOn.push(cb);
+					const fn = (...params: Parameters<ListenStatusCallback>) =>
+						cb(...params);
+					listenOn.push(fn);
 					if (immediate && _map.get(key)!.value) {
 						cb(_this, key, true);
 					}
+					return () => {
+						listenOn.splice(listenOn.indexOf(fn), 1);
+					};
 				},
 			},
 			[`listenOff${Upper}`]: {
@@ -270,10 +275,15 @@ export const createStatusRef = <T extends Params>(
 					cb: ListenStatusCallback,
 					immediate: boolean = false,
 				) => {
-					listenOff.push(cb);
+					const fn = (...params: Parameters<ListenStatusCallback>) =>
+						cb(...params);
+					listenOff.push(fn);
 					if (immediate && !_map.get(key)!.value) {
 						cb(_this, key, false);
 					}
+					return () => {
+						listenOff.splice(listenOn.indexOf(fn), 1);
+					};
 				},
 			},
 			...special,

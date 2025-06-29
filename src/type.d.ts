@@ -41,10 +41,7 @@ export type ListenStatusCallback = Fn<
  * @param immediate Whether to execute the callback immediately if the status is already expected.
  * - default is false.
  */
-type ListenFunction<ALL extends string[]> = Fn<
-	[cb: ListenStatusCallback, immediate?: boolean],
-	StatusRefResult<ALL>
->;
+type ListenFunction = Fn<[cb: ListenStatusCallback, immediate?: boolean], Fn>;
 
 type Change<T extends string, ALL extends string[]> = {
 	[K in T as
@@ -56,7 +53,7 @@ type Change<T extends string, ALL extends string[]> = {
 type Listen<T extends string, ALL extends string[]> = {
 	[K in T as
 		| `listenOn${Capitalize<K>}`
-		| `listenOff${Capitalize<K>}`]: ListenFunction<ALL>;
+		| `listenOff${Capitalize<K>}`]: ListenFunction;
 };
 
 type StatusRefSingle<T extends string, ALL extends string[]> = {
